@@ -79,12 +79,12 @@ void __sched_deregister_timer_irq()
 
 void __sched_pause_timer_irq()
 {
-	// TODO: suspend the timer here
+	disable_timer(SCHEDULER_TIMER);
 }
 
 void __sched_resume_timer_irq()
 {
-	// TODO: resume the timer here
+	enable_timer(SCHEDULER_TIMER);
 }
 
 // get the current process id
