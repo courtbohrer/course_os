@@ -86,6 +86,15 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 	case SYSCALL_DUMMY:
 		return 0L;
 
+	// CPH todo implement cases where thread-related syscalls are made
+	//
+	// case SYSCALL_THREAD_CREATE:
+	//     os_printf("Thread create system call called!\n"); 
+	//
+	// case SYSCALL_THREAD_EXIT:
+	//     os_printf("Thread exit system call called!\n");
+	//
+
 		break;
 	case SYSCALL_CREATE:
 		os_printf("Create system call called!\n");
