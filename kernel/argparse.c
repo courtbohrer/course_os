@@ -5,6 +5,7 @@
 #include "tests.h"
 #include "process.h"
 #include "fs/file.h"
+#include "scheduler.h"
 
 static void argparse_parse(char *);
 
@@ -127,7 +128,14 @@ static void argparse_parse(char *cmdline)
 
 			}
 
-			execute_process(proc);
+			//** don't want to execute, want to schedule**
+			//execute_process(proc);
+
+			const int DEFAULT_NICENESS = 10; // Akshay said this is a good value
+			sched_task *task = sched_create_task_from_process(proc, DEFAULT_NICENESS);
+			sched_add_task(task);
+			sched_start();
+			
 		}
 		else if (os_strcmp("-test", token) == 0)
 		{
