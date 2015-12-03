@@ -52,6 +52,19 @@
 #define SYSCALL_ALIGNED_ALLOC 14
 #define SYSCALL_FREE 15
 #define SYSCALL_PRINTF 16
+/**
+ *
+ * Adding system calls to be made from hw_handlers.c...
+ *
+ * - CPH
+ *
+ **/
+#define SYSCALL_THREAD_CREATE 17
+#define SYSCALL_THREAD_EXIT 18
+#define SYSCALL_THREAD_JOIN 19
+#define SYSCALL_THREAD_GET_ID 20
+#define SYSCALL_THREAD_SELF 21
+
 #define SYSCALL_DUMMY 99
 
 void init_vector_table(void); 
