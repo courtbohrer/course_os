@@ -79,11 +79,7 @@ int thread_get_id(thread_t thread)
  */
 thread_t thread_self(void)
 {
-<<<<<<< HEAD
-	
-=======
 	long error = 0;
 	error = __syscall0(SYSCALL_THREAD_SELF);
 	return error;
->>>>>>> d4c93fc4a5af486b1eec571df70f2d3424648438
 }

@@ -8,13 +8,6 @@
 #include "kthread.h"
 #include <global_defs.h>
 
-kthread_handle* kthread_create(kthread_callback_handler cb_handler)
-{
-	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
-	kthread->cb_handler = cb_handler;
-	return kthread;
-}
-
 uint32_t kthread_start(kthread_handle * kthread)
 {
 	// CAB implement later
@@ -22,6 +15,32 @@ uint32_t kthread_start(kthread_handle * kthread)
 	//sched_add_task(task);
 	return 0;
 }
+
+/**
+ *
+ * This will create and schedule a kernel thread.
+ * The thread will be calling the function "func" with argument "arg".
+ *
+ * - CAB
+ *
+ **/
+int kthread_create(void (*func)(void *a), void *arg)
+{
+	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
+	kthread->func = func;
+	kthread->arg = arg;
+	kthread_start(kthread);
+	return 0;
+}
+
+//kthread_handle* kthread_create(kthread_callback_handler cb_handler)
+//{
+//	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
+//	kthread->cb_handler = cb_handler;
+//	kthread_start(kthread);
+//	return kthread;
+//}
+
 void kthread_save_state( kthread_handle * handle_pointer )
 {
 	// CAB might need something similar?? 

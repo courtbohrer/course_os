@@ -55,7 +55,7 @@ void test_thread_lib()
 
 	ret_val = thread_join(thread, NULL);
 
-	thread_exit(NULL);
+	// thread_exit(NULL);
 
 	// SHOULD NEVER BE REACHED?
 	printf("...done testing the thread library.\n");

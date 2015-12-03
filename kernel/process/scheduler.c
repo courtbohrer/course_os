@@ -84,11 +84,7 @@ void __sched_pause_timer_irq()
 
 void __sched_resume_timer_irq()
 {
-<<<<<<< HEAD
-    enable_timer_interrupt(SCHEDULER_TIMER);
-=======
 	enable_timer_interrupt(SCHEDULER_TIMER);
->>>>>>> d4c93fc4a5af486b1eec571df70f2d3424648438
 }
 
 // get the current process id
@@ -355,7 +351,10 @@ void __sched_dispatch(void) {
                 __sched_resume_timer_irq();
                 execute_process(AS_PROCESS(active_task));
             } else if (IS_KTHREAD(active_task)) {
-                AS_KTHREAD(active_task)->cb_handler();
+
+                // ** IMPORTANT COME BACK ** CAB
+
+                //AS_KTHREAD(active_task)->cb_handler();
             }
 
             __sched_pause_timer_irq();

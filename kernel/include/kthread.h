@@ -10,8 +10,6 @@
 #ifndef KERNEL_INCLUDE_KTHREAD_H_
 #define KERNEL_INCLUDE_KTHREAD_H_
 
-typedef void (*kthread_callback_handler)();
-
 typedef enum THREAD_STATE
 {
 	THREAD_NEW, THREAD_READY, THREAD_RUNNING, THREAD_BLOCKED
@@ -21,6 +19,8 @@ typedef struct kthread_handle {
     uint32_t parent_pid;
     int niceness;
     THREAD_STATE current_state;
+    void (*func)(void *arg);
+    void *arg;
 
 	//unbanked register
 	uint32_t R0;
@@ -42,11 +42,9 @@ typedef struct kthread_handle {
 	uint32_t R14;
 	uint32_t R15; //corresponds to the PC
 
-	// CAB not actually using this... can maybe delete?
-    kthread_callback_handler cb_handler;
 } kthread_handle;
 
-//void colehecht() { while(1234==1234); }
+int kthread_create(void (*func)(void *a), void *arg);
 
 void kthread_save_state( kthread_handle *handle_pointer );
 
