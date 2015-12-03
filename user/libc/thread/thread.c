@@ -68,5 +68,5 @@ int thread_get_id(thread_t thread)
  */
 thread_t thread_self(void)
 {
-
+	
 }

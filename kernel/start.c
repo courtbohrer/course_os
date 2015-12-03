@@ -32,7 +32,7 @@
 #include "mem_alloc.h"
 #include "tests.h"
 #include "drivers/timer.h"
-#include "kthread.h"
+//#include "kthread.h"
 #include "scheduler.h"
 
 // Tests
@@ -111,10 +111,12 @@ void start2(uint32_t *p_bootargs)
 	sched_init();
 
 	// FIXME: temporary
-	os_printf("Programming the timer interrupt\n");
-	start_timer_interrupts(0, 10);
+	//os_printf("Programming the timer interrupt\n");
+	//timestart_timer_interrupts(0, 10);
 
 	argparse_process(p_bootargs);
+
+	sched_start();
 
 	print_uart0("done parsing atag list\n");
 

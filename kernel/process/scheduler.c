@@ -1,5 +1,4 @@
 #include "global_defs.h"
-#include "kthread.h"
 #include "scheduler.h"
 #include "vm.h"
 #include "klibc.h"
@@ -8,6 +7,7 @@
 #include "data_structures/hash_map.h"
 #include "data_structures/array_list.h"
 #include "drivers/timer.h"
+#include "kthread.h"
 
 #define MAX_TASKS 100   // in the future, cap will be removed
 #define MAX_ACTIVE_TASKS 4  // in the future, will dynamically change based on load
@@ -22,7 +22,7 @@
 #define PROCESS 1
 
 #define AS_PROCESS(a) ((pcb*) a->task)
-#define AS_KTHREAD(a) ((kthread_handle*) a->task)
+#define AS_KTHREAD(a) ((kthread_handle*) a->task) 
 #define IS_PROCESS(a) (a->type == PROCESS)
 #define IS_KTHREAD(a) (a->type == KTHREAD)
 
@@ -84,7 +84,6 @@ void __sched_pause_timer_irq()
 
 void __sched_resume_timer_irq()
 {
-	// enable_timer(SCHEDULER_TIMER); // CPH - this doesn't exist, adding the below?
     enable_timer_interrupt(SCHEDULER_TIMER);
 }
 
@@ -141,6 +140,15 @@ uint32_t sched_free() {
 
     // FIXME kill active tasks
 
+    //CAB what does killing them do??
+
+    while(prq_dequeue(active_tasks)){
+        //just set state to inactive??
+    }
+
+    hmap_free(all_tasks_map);
+
+    //CAB existing
     __sched_deregister_timer_irq();
 
     prq_free(inactive_tasks);
@@ -373,8 +381,8 @@ void __sched_dispatch(void) {
                         break;
                     }
 
-                    // FIXME: implement
-                    // kthread_save_state(AS_KTHREAD(active_task));
+                    //CAB
+                    kthread_save_state( AS_KTHREAD(active_task) );
                 }
 
                 active_task = next_task;
@@ -387,8 +395,8 @@ void __sched_dispatch(void) {
                 } else if (IS_KTHREAD(active_task)) {
                     __sched_emit_messages();
 
-                    // FIXME: implement
-                    // kthread_load_state(AS_KTHREAD(active_task));
+                    // CAB
+                    kthread_load_state(AS_KTHREAD(active_task));
                 }
             }
             break;
