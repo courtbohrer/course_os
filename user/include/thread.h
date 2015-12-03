@@ -5,6 +5,19 @@ typedef struct thread * thread_t;
 #define ERR_INVALID_THREAD		-3
 #define ERR_THREAD_TERMINATED		-4
 
+/**
+ *
+ * These are the system calls as defined in kernel/include/thread.h
+ *
+ * - CPH
+ *
+ **/
+#define SYSCALL_THREAD_CREATE 17
+#define SYSCALL_THREAD_EXIT 18
+#define SYSCALL_THREAD_JOIN 19
+#define SYSCALL_THREAD_GET_ID 20
+#define SYSCALL_THREAD_SELF 21
+
 /* 
  * \brief Creates a new thread.   
  *

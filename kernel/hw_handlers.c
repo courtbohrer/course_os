@@ -86,16 +86,45 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 	case SYSCALL_DUMMY:
 		return 0L;
 
-	// CPH todo implement cases where thread-related syscalls are made
-	//
-	// case SYSCALL_THREAD_CREATE:
-	//     os_printf("Thread create system call called!\n"); 
-	//
-	// case SYSCALL_THREAD_EXIT:
-	//     os_printf("Thread exit system call called!\n");
-	//
+	/**
+	 *
+	 * These are the cases where thread-related system calls are made.
+	 * They need to make calls to kernel-side code.
+	 *
+	 * - CPH
+	 *
+	 **/
 
-		break;
+	case SYSCALL_THREAD_CREATE:
+		os_printf("Thread create system call called!\n");
+
+		return (long) -1L; // TODO: replace these with actual function calls -CPH
+	case SYSCALL_THREAD_EXIT:
+		os_printf("Thread exit system call called!\n");
+
+		return (long) -1L; // TODO: replace these with actual function calls -CPH
+	case SYSCALL_THREAD_JOIN:
+		os_printf("Thread join system call called!\n");
+
+		return (long) -1L; // TODO: replace these with actual function calls -CPH
+	case SYSCALL_THREAD_GET_ID:
+		os_printf("Thread get id system call called!\n");
+
+		return (long) -1L; // TODO: replace these with actual function calls -CPH
+	case SYSCALL_THREAD_SELF:
+		os_printf("Thread self system call called!\n");
+
+		return (long) -1L; // TODO: replace these with actual function calls -CPH
+
+	/**
+	 *
+	 * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	 * Thread-related system calls above here.
+	 *
+	 * - CPH
+	 *
+	 **/
+
 	case SYSCALL_CREATE:
 		os_printf("Create system call called!\n");
 

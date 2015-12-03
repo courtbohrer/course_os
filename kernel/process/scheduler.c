@@ -84,7 +84,11 @@ void __sched_pause_timer_irq()
 
 void __sched_resume_timer_irq()
 {
+<<<<<<< HEAD
     enable_timer_interrupt(SCHEDULER_TIMER);
+=======
+	enable_timer_interrupt(SCHEDULER_TIMER);
+>>>>>>> d4c93fc4a5af486b1eec571df70f2d3424648438
 }
 
 // get the current process id
