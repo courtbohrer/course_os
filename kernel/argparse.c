@@ -134,7 +134,6 @@ static void argparse_parse(char *cmdline)
 			const int DEFAULT_NICENESS = 10; // Akshay said this is a good value
 			sched_task *task = sched_create_task_from_process(proc, DEFAULT_NICENESS);
 			sched_add_task(task);
-			sched_start();
 			
 		}
 		else if (os_strcmp("-test", token) == 0)

@@ -84,8 +84,7 @@ void __sched_pause_timer_irq()
 
 void __sched_resume_timer_irq()
 {
-	// enable_timer(SCHEDULER_TIMER); // CPH - this doesn't exist, adding the below?
-    enable_timer_interrupt(SCHEDULER_TIMER);
+	enable_timer_interrupt(SCHEDULER_TIMER);
 }
 
 // get the current process id

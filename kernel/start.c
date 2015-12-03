@@ -115,6 +115,8 @@ void start2(uint32_t *p_bootargs)
 	start_timer_interrupts(0, 10);
 
 	argparse_process(p_bootargs);
+	
+	sched_start();
 
 	print_uart0("done parsing atag list\n");
 
