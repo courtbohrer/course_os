@@ -118,8 +118,6 @@ void start2(uint32_t *p_bootargs)
 	
 	sched_start();
 
-	sched_start();
-
 	print_uart0("done parsing atag list\n");
 
 	//init_kheap(31 * 0x100000);

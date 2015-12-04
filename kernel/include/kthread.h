@@ -1,5 +1,5 @@
 #include <process.h>
-#include "scheduler.h"
+#include <scheduler.h>
 /*
  * kthread.h
  *
@@ -19,7 +19,7 @@ typedef struct kthread_handle {
     uint32_t parent_pid;
     int niceness;
     THREAD_STATE current_state;
-    void (*func)(void *arg);
+    uint32_t (*func)();
     void *arg;
 
 	//unbanked register
@@ -44,7 +44,7 @@ typedef struct kthread_handle {
 
 } kthread_handle;
 
-int kthread_create(void (*func)(void *a), void *arg);
+int kthread_create(uint32_t (*func)(), void *arg);
 
 void kthread_save_state( kthread_handle *handle_pointer );
 

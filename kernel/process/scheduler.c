@@ -65,6 +65,7 @@ void __sched_dispatch(void);
 void timer_handler(void *args)
 {
 	os_printf("scheduler received timer interrupt, need to switch tasks...\n");
+    __sched_dispatch();
 }
 
 void __sched_register_timer_irq(void)
@@ -318,6 +319,8 @@ void __sched_dispatch(void) {
     // prevent interrupts while handling another interrupt
     __sched_pause_timer_irq();
 
+    os_printf("In schedule dispatch :-) \n");
+
     // use the kernel memory
     vm_use_kernel_vas();
 
@@ -381,6 +384,8 @@ void __sched_dispatch(void) {
                     save_process_state(AS_PROCESS(last_task));
                 } else if (IS_KTHREAD(active_task)) {
                     if (active_task == next_task) {
+                        //maybe ??
+                        //vm_enable_vas(AS_KTHREAD(active_task)->stored_vas);
                         break;
                     }
 
@@ -394,6 +399,7 @@ void __sched_dispatch(void) {
                 if (IS_PROCESS(active_task)){
                     vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
                     __sched_emit_messages();
+                    __sched_resume_timer_irq();
                     load_process_state(AS_PROCESS(active_task)); // continue with the next process
                 } else if (IS_KTHREAD(active_task)) {
                     __sched_emit_messages();
@@ -432,7 +438,8 @@ uint32_t sched_add_task(sched_task * task) {
         if (IS_PROCESS(active_task)) {
             vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
         } else if (IS_KTHREAD(active_task)) {
-            // ignore
+            // ??? help?
+            // vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
         }
 
         return active_task->tid;

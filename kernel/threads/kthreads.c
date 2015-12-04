@@ -7,12 +7,13 @@
 
 #include "kthread.h"
 #include <global_defs.h>
+#include <vm.h> // for getting current VAS
+#include "klibc.h"
 
 uint32_t kthread_start(kthread_handle * kthread)
 {
-	// CAB implement later
-	//sched_task * task = sched_create_task(kthread);
-	//sched_add_task(task);
+	sched_task * task = sched_create_task_from_kthread(kthread, 10);   // using default 10 niceness
+	sched_add_task(task);
 	return 0;
 }
 
@@ -24,12 +25,24 @@ uint32_t kthread_start(kthread_handle * kthread)
  * - CAB
  *
  **/
-int kthread_create(void (*func)(void *a), void *arg)
+int kthread_create(uint32_t (*func)(), void *arg)
 {
+	// get into kernel VAS and save state
+	vm_use_kernel_vas();
+	struct vas *curr_vas = vm_get_current_vas();
+
+	// create handle and pass function
 	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
 	kthread->func = func;
+	kthread->R15 = (uint32_t)func;
 	kthread->arg = arg;
+
+	// leave kernel vas
+	vm_enable_vas(curr_vas);
+
 	kthread_start(kthread);
+
+	// ** fix this **
 	return 0;
 }
 
