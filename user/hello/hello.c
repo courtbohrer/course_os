@@ -71,6 +71,7 @@ void test_thread_lib()
  **/
 void *test_function_for_thread(void *args)
 {
+	printf("in test function\n");
 	int return_me = 1;
 	for (int i = 1; i < (int)args; i++)
 		return_me *= i;

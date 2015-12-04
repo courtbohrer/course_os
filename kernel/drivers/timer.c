@@ -214,13 +214,12 @@ int print_control_status(int timer_index)
 // and interrupt every 10 clicks.
 int start_timer_interrupts(int timer_index, int milliseconds)
 {
-	os_printf("int start_timer_interrupts(int timer_index, int milliseconds)");
 //	conversion(timer_index, milliseconds);
 	CHECK_TIMER_INDEX(timer_index);
 
 	int clicks = conversion(timer_index, milliseconds);
 
-	os_printf("CLICKS ARE %d\n", clicks);
+	// os_printf("CLICKS ARE %d\n", clicks);
 
 	set_background_load_value(timer_index, clicks);
 	set_periodic_mode(timer_index);

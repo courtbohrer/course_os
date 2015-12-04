@@ -47,10 +47,13 @@ typedef struct kthread_handle {
 
 } kthread_handle;
 
-int kthread_create(uint32_t (*func)(), void *arg);
+int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg);
 
 void kthread_save_state( kthread_handle *handle_pointer );
 
 void kthread_load_state( kthread_handle *handle_pointer );
+
+// void execute_process(pcb* pcb_p) __attribute__ ((noreturn)); ...ish
+void execute_kthread(kthread_handle *handle);
 
 #endif /* KERNEL_INCLUDE_KTHREAD_H_ */

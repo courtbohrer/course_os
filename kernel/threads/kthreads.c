@@ -25,12 +25,13 @@ uint32_t kthread_start(kthread_handle * kthread)
  * - CAB
  *
  **/
-int kthread_create(uint32_t (*func)(), void *arg)
+int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 {
 	// get into kernel VAS and save state
 	vm_use_kernel_vas();
 	struct vas *curr_vas = vm_get_current_vas();
 
+	
 	// create handle and pass function
 	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
 	kthread->func = func;
@@ -39,7 +40,7 @@ int kthread_create(uint32_t (*func)(), void *arg)
 
 	// leave kernel vas
 	vm_enable_vas(curr_vas);
-
+	
 	kthread_start(kthread);
 
 	// ** fix this **
@@ -102,4 +103,11 @@ void kthread_load_state(kthread_handle * handle_pointer)
 
 	// don't know why you would need this?
 	//__builtin_unreachable();
+}
+
+void execute_kthread(kthread_handle *handle)
+{
+	//os_printf("IN EXECUTE");
+	//asm("MOV %0, r15":"=r"(handle->R14)::);
+	//kthread_load_state(handle);
 }

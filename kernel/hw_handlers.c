@@ -99,7 +99,7 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 	case SYSCALL_THREAD_CREATE:
 		os_printf("Thread create system call called!\n");
 
-		return kthread_create((void *)r1, (void *)r2); // TODO: replace these with actual function calls -CPH
+		return kthread_create((kthread_handle *)r0, (uint32_t (*)())r1, (void *)r2); // TODO: replace these with actual function calls -CPH
 	case SYSCALL_THREAD_EXIT:
 		os_printf("Thread exit system call called!\n");
 
