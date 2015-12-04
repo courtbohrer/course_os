@@ -33,9 +33,9 @@ int kthread_create(uint32_t (*func)(), void *arg)
 
 	// create handle and pass function
 	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
-	kthread->func = func;
-	kthread->R15 = (uint32_t)func;
-	kthread->arg = arg;
+	 kthread->func = func;
+	// kthread->R15 = (uint32_t)func;
+	 kthread->arg = arg;
 
 	// leave kernel vas
 	vm_enable_vas(curr_vas);

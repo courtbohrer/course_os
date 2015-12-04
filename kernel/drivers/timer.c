@@ -214,6 +214,7 @@ int print_control_status(int timer_index)
 // and interrupt every 10 clicks.
 int start_timer_interrupts(int timer_index, int milliseconds)
 {
+	os_printf("int start_timer_interrupts(int timer_index, int milliseconds)");
 //	conversion(timer_index, milliseconds);
 	CHECK_TIMER_INDEX(timer_index);
 
@@ -245,14 +246,14 @@ int unregister_handler(int timer_index)
 void timer_irq_handler(void* args)
 {
 	os_printf("@@@@@@ RECEIVED TIMER INTERRUPT\n");
-
+		clear_interrupt(0);
 	// TODO: find out which timer fired. For the moment, hard-code to 0
 	if (handlers[0] != NULL)
 	{
 		handlers[0](args);
 	}
 
-	clear_interrupt(0);
+
 }
 
 void timer_test()

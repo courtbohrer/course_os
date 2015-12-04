@@ -112,7 +112,7 @@ void start2(uint32_t *p_bootargs)
 
 	// FIXME: temporary
 	//os_printf("Programming the timer interrupt\n");
-	//timestart_timer_interrupts(0, 10);
+	 start_timer_interrupts(0, 10);
 
 	argparse_process(p_bootargs);
 	

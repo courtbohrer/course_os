@@ -110,6 +110,7 @@ void handle_irq_interrupt(int interrupt_vector)
 /* enable IRQ and/or FIQ */
 void enable_interrupt(interrupt_t mask)
 {
+	os_printf("ENABLING MASTER INTERRUPT\n");
 	get_proc_status();
 
 	// enable interrupt on the core
@@ -148,6 +149,7 @@ void disable_interrupt(interrupt_t mask)
 /* disable IRQ and/or FIQ, but also return a copy of the CPSR */
 int disable_interrupt_save(interrupt_t mask)
 {
+	os_printf("DISABLING MASTER INTERRUPT\n");
 	/* get a copy of the current process status register */
 	int cpsr;
 	asm volatile("mrs %0, cpsr" : "=r"(cpsr));

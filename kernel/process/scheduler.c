@@ -85,7 +85,7 @@ void __sched_pause_timer_irq()
 
 void __sched_resume_timer_irq()
 {
-	enable_timer_interrupt(SCHEDULER_TIMER);
+	start_timer_interrupts(0,10);
 }
 
 // get the current process id
@@ -119,6 +119,8 @@ uint32_t sched_init(void) {
 // initial call that causes the scheduler to start
 void sched_start(void)
 {
+    // start timer intereupts
+    //start_timer_interrupts(SCHEDULER_TIMER, 10);
 	__sched_dispatch();
 }
 
@@ -384,8 +386,6 @@ void __sched_dispatch(void) {
                     save_process_state(AS_PROCESS(last_task));
                 } else if (IS_KTHREAD(active_task)) {
                     if (active_task == next_task) {
-                        //maybe ??
-                        //vm_enable_vas(AS_KTHREAD(active_task)->stored_vas);
                         break;
                     }
 
@@ -405,6 +405,7 @@ void __sched_dispatch(void) {
                     __sched_emit_messages();
 
                     // CAB
+                    __sched_resume_timer_irq();
                     kthread_load_state(AS_KTHREAD(active_task));
                 }
             }
