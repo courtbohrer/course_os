@@ -21,6 +21,7 @@ typedef enum THREAD_STATE
 typedef struct kthread_handle {
     uint32_t parent_pid;
     int niceness;
+    struct vas *stored_vas;
     THREAD_STATE current_state;
     uint32_t (*func)();
     void *arg;
