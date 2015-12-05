@@ -10,8 +10,16 @@
 #include <vm.h> // for getting current VAS
 #include "klibc.h"
 
+static uint32_t GLOBAL_TID;
+
+int init_all_threads(){
+	GLOBAL_TID = 0;
+	return 0;
+}
+
 uint32_t kthread_start(kthread_handle * kthread)
 {
+	os_printf("entered kthread_start");
 	sched_task * task = sched_create_task_from_kthread(kthread, 10);   // using default 10 niceness
 	sched_add_task(task);
 	return 0;
@@ -29,23 +37,27 @@ int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 {
 	// get into kernel VAS and save state
 	os_printf("in kthread create");
-	vm_use_kernel_vas();
 	struct vas *curr_vas = vm_get_current_vas();
 
+	vm_use_kernel_vas();
 	
 	// create handle and pass function
 	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
-	kthread->stored_vas = curr_vas;
+	kthread->TID = ++GLOBAL_TID;
+
 	kthread->func = func;
-	kthread->R15 = (uint32_t)func;
 	kthread->arg = arg;
+
+	// save PC and SP
+	kthread->R13 = STACK_TOP -(kthread->TID * BLOCK_SIZE) - 24 ;  //SP
+	kthread->R15 = (uint32_t)func;	//PC
+
 
 	// leave kernel vas
 	vm_enable_vas(curr_vas);
 	
 	kthread_start(kthread);
 
-	// ** fix this **
 	return 0;
 }
 
@@ -81,14 +93,14 @@ void kthread_save_state( kthread_handle * handle_pointer )
 	asm("MOV %0, r14":"=r"(handle_pointer->R14)::);
 	asm("MOV %0, r15":"=r"(handle_pointer->R15)::);
 
-	os_printf("successfully saved state");
+	os_printf("leaving saved state");
 }
 
 void kthread_load_state(kthread_handle * handle_pointer)
 {
 	os_printf("in save state -- ");
 
-	vm_enable_vas(handle_pointer->stored_vas);
+	//vm_enable_vas(handle_pointer->stored_vas);
 
 	asm("MOV r0, %0"::"r"(handle_pointer->R0):);
 	asm("MOV r1, %0"::"r"(handle_pointer->R1):);
@@ -106,12 +118,14 @@ void kthread_load_state(kthread_handle * handle_pointer)
 	asm("MOV r14, %0"::"r"(handle_pointer->R14):);
 	asm("MOV r15, %0"::"r"(handle_pointer->R15):);
 
-	os_printf("successfully loaded state");
+	os_printf("leaving loaded state");
 }
 
 void execute_kthread(kthread_handle *handle)
 {
 	os_printf("in kthread execute");
-	//asm("MOV %0, r15":"=r"(handle->R14)::);
-	//kthread_load_state(handle);
+	asm("MOV %0, r15":"=r"(handle->R14)::);
+	//vm_enable_vas(handle->stored_vas);
+	handle->current_state = THREAD_RUNNING;
+	kthread_load_state(handle);
 }
