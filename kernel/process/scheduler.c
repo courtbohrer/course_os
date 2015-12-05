@@ -34,6 +34,8 @@ static hmap_handle * all_tasks_map;
 
 static uint32_t sched_tid;
 
+pcb *current_pcb;
+
 // NOTE
 // scheduler logic only. not tested
 
@@ -354,9 +356,10 @@ void __sched_dispatch(void) {
 
             if (IS_PROCESS(active_task)) {
                 __sched_resume_timer_irq();
+                current_pcb = AS_PROCESS(active_task);
                 execute_process(AS_PROCESS(active_task));
             } else if (IS_KTHREAD(active_task)) {
-
+                execute_kthread(AS_KTHREAD(active_task), current_pcb);
                 // ** IMPORTANT COME BACK ** CAB
                 //kthread_load_state(AS_KTHREAD(active_task));
                 //AS_KTHREAD(active_task)->cb_handler();
@@ -439,7 +442,7 @@ uint32_t sched_add_task(sched_task * task) {
         if (IS_PROCESS(active_task)) {
             vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
         } else if (IS_KTHREAD(active_task)) {
-            // ??? help?
+            // CAB Might need this?
             // vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
         }
 

@@ -49,7 +49,7 @@ int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 	kthread->arg = arg;
 
 	// save PC and SP
-	kthread->R13 = STACK_TOP -(kthread->TID * BLOCK_SIZE) - 24 ;  //SP
+	//kthread->R13 = STACK_TOP -(kthread->TID * BLOCK_SIZE) - 24 ;  //SP ///check this
 	kthread->R15 = (uint32_t)func;	//PC
 
 
@@ -60,6 +60,9 @@ int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 
 	return 0;
 }
+
+
+
 
 //kthread_handle* kthread_create(kthread_callback_handler cb_handler)
 //{
@@ -121,11 +124,60 @@ void kthread_load_state(kthread_handle * handle_pointer)
 	os_printf("leaving loaded state");
 }
 
-void execute_kthread(kthread_handle *handle)
+void execute_kthread(kthread_handle *handle, pcb * pcb_p)
 {
 	os_printf("in kthread execute");
 	asm("MOV %0, r15":"=r"(handle->R14)::);
-	//vm_enable_vas(handle->stored_vas);
+	//hard coding for only one thread -- fix later if there is time
+	vm_enable_vas(pcb_p->stored_vas + BLOCK_SIZE);
 	handle->current_state = THREAD_RUNNING;
 	kthread_load_state(handle);
 }
+
+// void init_kthread_stack(kthread_handle *handle)
+// {
+// 	int retval = 0;
+
+// 	for (int i = 0; i < (STACK_SIZE / BLOCK_SIZE); i++)
+// 	{
+// 		retval = vm_allocate_page(pcb_p->stored_vas,
+// 				(void*) (STACK_BASE + (i * BLOCK_SIZE)), VM_PERM_USER_RW);
+// 		if (retval)
+// 		{
+// 			os_printf("vm_allocate_page error code: %d\n", retval);
+// 			break;
+// 		}
+// 		else
+// 		{
+// 			os_printf(
+// 					"A page have been allocated for process stack at vptr: 0x%x\n",
+// 					(STACK_BASE + (i * BLOCK_SIZE)));
+// 		}
+
+// 			vm_map_shared_memory(KERNEL_VAS,
+// 				(void*) (STACK_BASE + (i * BLOCK_SIZE)), pcb_p->stored_vas,
+// 				(void*) (STACK_BASE + (i * BLOCK_SIZE)), VM_PERM_USER_RW);
+		
+// 	}
+
+// 	// Stick a NULL at STACK_TOP-sizeof(int*)
+// 	uint32_t *stack_top = (uint32_t*) STACK_TOP;
+// 	stack_top[-1] = 0;
+// 	stack_top[-2] = 0;
+// 	stack_top[-3] = 0;
+// 	stack_top[-4] = 0;
+// 	stack_top[-5] = STACK_BASE;
+// 	stack_top[-6] = 1;
+
+// 	os_strcpy((char*) STACK_BASE, pcb_p->name);
+
+// 	// We need to set sp (r13) to stack_top - 12
+// 	pcb_p->R13 = STACK_TOP - 4 * 6;
+// 	print_process_state(pcb_p->PID);
+
+// 	for (int i = 0; i < (STACK_SIZE / BLOCK_SIZE); i++)
+// 	{
+// 		vm_free_mapping(KERNEL_VAS, (void*) (STACK_BASE + (i * BLOCK_SIZE)));
+
+// 	}
+// }
