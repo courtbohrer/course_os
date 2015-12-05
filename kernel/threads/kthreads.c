@@ -12,9 +12,11 @@
 
 uint32_t kthread_start(kthread_handle * kthread)
 {
+	os_printf("about to start kthread_start\n");
 	sched_task * task = sched_create_task_from_kthread(kthread, 10);   // using default 10 niceness
 	sched_add_task(task);
-	return 0;
+	os_printf("about to finish kthread_start\n");
+	return -17;
 }
 
 /**
@@ -27,6 +29,10 @@ uint32_t kthread_start(kthread_handle * kthread)
  **/
 int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 {
+	int retval = 0;
+
+	os_printf("about to start kthread_create\n");
+
 	// get into kernel VAS and save state
 	vm_use_kernel_vas();
 	struct vas *curr_vas = vm_get_current_vas();
@@ -40,12 +46,52 @@ int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 
 	// leave kernel vas
 	vm_enable_vas(curr_vas);
-	
-	kthread_start(kthread);
 
-	// ** fix this **
-	return 0;
+	os_printf("about to call kthread_start\n");
+
+	retval = kthread_start(kthread);
+
+	os_printf("done calling kthread_start ~ ", retval);
+   		switch (retval) 
+   		{
+   		case -20: printf("retval=-20\n"); break; case -19: printf("retval=-19\n"); break;
+   		case -18: printf("retval=-18\n"); break; case -17: printf("retval=-17\n"); break;
+   		case -16: printf("retval=-16\n"); break; case -15: printf("retval=-15\n"); break;
+   		case -14: printf("retval=-14\n"); break; case -13: printf("retval=-13\n"); break;
+   		case -12: printf("retval=-12\n"); break; case -11: printf("retval=-11\n"); break;
+   		case -10: printf("retval=-10\n"); break; case -9: printf("ret=-9\n");   break;
+   		case -8: printf("retval=-8\n");   break; case -7: printf("ret=-7\n");   break;
+   		case -6: printf("retval=-6\n");   break; case -5: printf("ret=-5\n");   break;
+   		case -4: printf("retval=-4\n");   break; case -3: printf("ret=-3\n");   break;
+   		case -2: printf("retval=-2\n");   break; 
+   		case -1: printf("retval=-1\n");   break; case 0: printf("retval=0\n");     break;
+   		case 20: printf("retval=20\n");   break; case 19: printf("retval=19\n");   break;
+   		case 18: printf("retval=18\n");   break; case 17: printf("retval=17\n");   break;
+   		case 16: printf("retval=16\n");   break; case 15: printf("retval=15\n");   break;
+   		case 14: printf("retval=14\n");   break; case 13: printf("retval=13\n");   break;
+   		case 12: printf("retval=12\n");   break; case 11: printf("retval=11\n");   break;
+   		case 10: printf("retval=10\n");   break; case 9: printf("retval=9\n");     break;
+   		case 8: printf("retval=8\n");     break; case 7: printf("retval=7\n");     break;
+   		case 6: printf("retval=6\n");     break; case 5: printf("retval=5\n");     break;
+   		case 4: printf("retval=4\n");     break; case 3: printf("retval=3\n");     break;
+   		case 2: printf("retval=2\n");     break; case 1: printf("retval=1\n");     break;
+   		}
+
+   	handle = (kthread_handle *)retval;
+
+	/**
+	 *
+	 * Note: this point of the function will not be reached.
+	 *          Uncomment the line below to verify.
+	 *
+	 * - CPH
+	 *
+	 **/
+	// os_printf("in about to return kthread_create\n");
+
+	return retval;
 }
+
 
 //kthread_handle* kthread_create(kthread_callback_handler cb_handler)
 //{

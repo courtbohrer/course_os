@@ -10,6 +10,18 @@
 #ifndef KERNEL_INCLUDE_KTHREAD_H_
 #define KERNEL_INCLUDE_KTHREAD_H_
 
+/**
+ *
+ * These constants mirror the error codes in user/include/thread.h
+ *
+ * - CPH
+ *
+ **/
+#define ERR_INSUFFICIENT_RESOURCES	-1
+#define ERR_INVALID_ARGUMENTS		-2
+#define ERR_INVALID_THREAD			-3
+#define ERR_THREAD_TERMINATED		-4
+
 typedef enum THREAD_STATE
 {
 	THREAD_NEW, 

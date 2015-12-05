@@ -17,8 +17,34 @@
 int thread_create(thread_t *thread, void *(*func)(void*), void *arg)
 {
 	long error = 0;
+
+	// This makes forces the thread pointer and the funcion pointer to be
+	//	non-NULL, or ERR_INVALID_ARGUMENTS will be returned.
+	if ( thread == NULL || func == NULL )
+	{
+		return ERR_INVALID_ARGUMENTS;
+	}
+
 	error = __syscall3(SYSCALL_THREAD_CREATE, (long)thread, (long)func, (long)arg);
-	return error;
+	
+	switch ((int)thread)
+	{
+		case ERR_INSUFFICIENT_RESOURCES:
+			return ERR_INSUFFICIENT_RESOURCES;
+
+		case ERR_INVALID_ARGUMENTS:
+			return ERR_INVALID_ARGUMENTS;
+
+		case ERR_INVALID_THREAD:
+			return ERR_INVALID_THREAD;
+
+		case ERR_THREAD_TERMINATED:
+			return ERR_THREAD_TERMINATED;
+
+		default:
+			return 0; // Success
+	}
+
 }
 
 /* 

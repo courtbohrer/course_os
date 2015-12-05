@@ -2,7 +2,7 @@ typedef struct thread * thread_t;
 
 #define ERR_INSUFFICIENT_RESOURCES	-1
 #define ERR_INVALID_ARGUMENTS		-2
-#define ERR_INVALID_THREAD		-3
+#define ERR_INVALID_THREAD			-3
 #define ERR_THREAD_TERMINATED		-4
 
 /**
@@ -75,3 +75,8 @@ int thread_get_id(thread_t thread);
  */
 thread_t thread_self(void);
 
+//struct thread
+//{
+//	uint32_t tid;
+//	int err_status;
+//};

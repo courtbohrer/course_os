@@ -44,7 +44,7 @@ pcb* process_create(uint32_t* file_p)
 			return (pcb*) -1;
 		}
 
-		//Debug, should be removed once scheduler works
+		// Debug, should be removed once scheduler works
 		os_printf("THIS IS R13: %X \n", pcb_pointer->R13);
 
 		//fill the free space with a pcb pointer
