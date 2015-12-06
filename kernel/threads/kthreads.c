@@ -19,8 +19,11 @@ int init_all_threads(){
 
 uint32_t kthread_start(kthread_handle * kthread)
 {
-	os_printf("entered kthread_start");
+	os_printf("entered kthread_start \n");
+	//struct vas *curr_vas = vm_get_current_vas();
+	vm_use_kernel_vas();
 	sched_task * task = sched_create_task_from_kthread(kthread, 10);   // using default 10 niceness
+	//vm_enable_vas(curr_vas);
 	sched_add_task(task);
 	os_printf("about to finish kthread_start\n");
 	return -17;
@@ -41,7 +44,7 @@ int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 	os_printf("about to start kthread_create\n");
 
 	// get into kernel VAS and save state
-	os_printf("in kthread create");
+	os_printf("in kthread create \n");
 	struct vas *curr_vas = vm_get_current_vas();
 
 	vm_use_kernel_vas();
@@ -50,12 +53,13 @@ int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
 	kthread->TID = ++GLOBAL_TID;
 
-	kthread->func = func;
+	//kthread->func = func;
 	kthread->arg = arg;
 
 	// save PC and SP
-	kthread->R13 = STACK_TOP -(kthread->TID * BLOCK_SIZE) - 24 ;  //SP
+	//kthread->R13 = STACK_TOP -(kthread->TID * BLOCK_SIZE) - 24 ;  //SP ///check this
 	kthread->R15 = (uint32_t)func;	//PC
+	kthread->R0 = (uint32_t)arg;	//loading arguments into register
 
 
 	// leave kernel vas
@@ -107,6 +111,11 @@ int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 
 }
 
+void thread_exit(void* result)
+{
+	
+}
+
 
 //kthread_handle* kthread_create(kthread_callback_handler cb_handler)
 //{
@@ -145,7 +154,7 @@ void kthread_save_state( kthread_handle * handle_pointer )
 
 void kthread_load_state(kthread_handle * handle_pointer)
 {
-	os_printf("in save state -- ");
+	os_printf("in load state -- ");
 
 	//vm_enable_vas(handle_pointer->stored_vas);
 
@@ -165,14 +174,66 @@ void kthread_load_state(kthread_handle * handle_pointer)
 	asm("MOV r14, %0"::"r"(handle_pointer->R14):);
 	asm("MOV r15, %0"::"r"(handle_pointer->R15):);
 
-	os_printf("leaving loaded state");
+__builtin_unreachable();
+
+	//os_printf("leaving loaded state");
 }
 
-void execute_kthread(kthread_handle *handle)
+void execute_kthread(kthread_handle *handle, pcb * pcb_p)
 {
-	os_printf("in kthread execute");
+	os_printf("in kthread execute\n");
 	asm("MOV %0, r15":"=r"(handle->R14)::);
-	//vm_enable_vas(handle->stored_vas);
+	os_printf("after mov\n");
+	//hard coding for only one thread -- fix later if there is time
 	handle->current_state = THREAD_RUNNING;
+	vm_enable_vas(pcb_p->stored_vas);
 	kthread_load_state(handle);
 }
+
+// void init_kthread_stack(kthread_handle *handle)
+// {
+// 	int retval = 0;
+
+// 	for (int i = 0; i < (STACK_SIZE / BLOCK_SIZE); i++)
+// 	{
+// 		retval = vm_allocate_page(pcb_p->stored_vas,
+// 				(void*) (STACK_BASE + (i * BLOCK_SIZE)), VM_PERM_USER_RW);
+// 		if (retval)
+// 		{
+// 			os_printf("vm_allocate_page error code: %d\n", retval);
+// 			break;
+// 		}
+// 		else
+// 		{
+// 			os_printf(
+// 					"A page have been allocated for process stack at vptr: 0x%x\n",
+// 					(STACK_BASE + (i * BLOCK_SIZE)));
+// 		}
+
+// 			vm_map_shared_memory(KERNEL_VAS,
+// 				(void*) (STACK_BASE + (i * BLOCK_SIZE)), pcb_p->stored_vas,
+// 				(void*) (STACK_BASE + (i * BLOCK_SIZE)), VM_PERM_USER_RW);
+		
+// 	}
+
+// 	// Stick a NULL at STACK_TOP-sizeof(int*)
+// 	uint32_t *stack_top = (uint32_t*) STACK_TOP;
+// 	stack_top[-1] = 0;
+// 	stack_top[-2] = 0;
+// 	stack_top[-3] = 0;
+// 	stack_top[-4] = 0;
+// 	stack_top[-5] = STACK_BASE;
+// 	stack_top[-6] = 1;
+
+// 	os_strcpy((char*) STACK_BASE, pcb_p->name);
+
+// 	// We need to set sp (r13) to stack_top - 12
+// 	pcb_p->R13 = STACK_TOP - 4 * 6;
+// 	print_process_state(pcb_p->PID);
+
+// 	for (int i = 0; i < (STACK_SIZE / BLOCK_SIZE); i++)
+// 	{
+// 		vm_free_mapping(KERNEL_VAS, (void*) (STACK_BASE + (i * BLOCK_SIZE)));
+
+// 	}
+// }

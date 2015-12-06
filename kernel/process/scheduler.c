@@ -34,6 +34,8 @@ static hmap_handle * all_tasks_map;
 
 static uint32_t sched_tid;
 
+pcb *current_pcb;
+
 // NOTE
 // scheduler logic only. not tested
 
@@ -80,7 +82,7 @@ void __sched_deregister_timer_irq()
 
 void __sched_pause_timer_irq()
 {
-	disable_timer(SCHEDULER_TIMER);
+	disable_timer_interrupt(SCHEDULER_TIMER);
 }
 
 void __sched_resume_timer_irq()
@@ -354,10 +356,13 @@ void __sched_dispatch(void) {
 
             if (IS_PROCESS(active_task)) {
                 __sched_resume_timer_irq();
+                current_pcb = AS_PROCESS(active_task);
+                //os_printf("****HI FRIENDS IM ABOUT TO CALL EXECUTE process*****\n");
                 execute_process(AS_PROCESS(active_task));
             } else if (IS_KTHREAD(active_task)) {
-
-                // ** IMPORTANT COME BACK ** CAB
+                __sched_resume_timer_irq();
+                os_printf("****HI FRIENDS IM ABOUT TO CALL EXECUTE KTHREAD*****\n");
+                execute_kthread(AS_KTHREAD(active_task), current_pcb);
                 //kthread_load_state(AS_KTHREAD(active_task));
                 //AS_KTHREAD(active_task)->cb_handler();
             }
@@ -418,6 +423,7 @@ void __sched_dispatch(void) {
 
 // start process
 uint32_t sched_add_task(sched_task * task) {
+    os_printf("in sched_add_task \n");
     if (task) {
         if (task->state != TASK_STATE_NONE) {
             last_err = "Reusing task object not allowed";
@@ -439,7 +445,7 @@ uint32_t sched_add_task(sched_task * task) {
         if (IS_PROCESS(active_task)) {
             vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
         } else if (IS_KTHREAD(active_task)) {
-            // ??? help?
+            // CAB Might need this?
             // vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
         }
 

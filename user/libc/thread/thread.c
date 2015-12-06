@@ -25,6 +25,7 @@ int thread_create(thread_t *thread, void *(*func)(void*), void *arg)
 		return ERR_INVALID_ARGUMENTS;
 	}
 
+	printf("Arguments to thread_create are okay. Making syscall.\n");
 	error = __syscall3(SYSCALL_THREAD_CREATE, (long)thread, (long)func, (long)arg);
 	
 	switch ((int)thread)

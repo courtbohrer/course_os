@@ -1,83 +1,26 @@
-#include <stdio.h>
-#include "../libc/arch/arm/syscall_arch.h"
-#include <fs_syscalls.h>
 #include <thread.h>
+#include <assert.h>
+#include <stdio.h>
 
-void test_thread_lib();
-void *test_function_for_thread(void *args);
+void* f(void* arg)
+{
+   printf("this is the thread\n");
 
-int main() {
-	__syscall3(99, 0, 0, 0);
+   assert(((int)arg) == 1);
 
-	printf("Hello world... from hello.c\n");
-
-	printf("LET'S TEST %d\n", 10);
-
-	int* mem = 0;
-	mem = (int*) malloc(100);
-
-	printf("malloc returned %x\n", mem);
-
-	mem[0] = 1;
-	mem[10] = 2;
-
-    free(mem);
-
-    test_thread_lib();
-
-    printf("success\n");
-
-    while(1);
+   thread_exit(NULL);
 }
 
-//void infloop() { while (1); }
-
-/**
- *
- * This function is to test the functionality of our thread library.
- * 
- * - CPH
- *
- **/
-void test_thread_lib()
+void main(void)
 {
-	printf("Now testing the thread library... :)\n");
+   thread_t thread;
 
-	thread_t *thread;
+   printf("before thread_create\n");
 
-	int ret_val = 0;
+   int rc = thread_create(&thread, f, (void*) 1);
+   assert(rc == 0);
 
-	ret_val = thread_create(thread, &test_function_for_thread, 10);
+   printf("after thread_create\n");
 
-	if (ret_val == ERR_THREAD_TERMINATED) printf("thread_create returned ERR_THREAD_TERMINATED!\n");
-	if (ret_val == ERR_INVALID_ARGUMENTS) printf("thread_create returned ERR_INVALID_ARGUMENTS!\n");
-	if (ret_val == 0) printf("thread_create returned 0..\n");
-
-	thread_self();
-
-	ret_val = thread_get_id(thread);
-
-	ret_val = thread_join(thread, NULL);
-
-	// thread_exit(NULL);
-
-	// SHOULD NEVER BE REACHED?
-	printf("...done testing the thread library.\n");
-}
-
-/**
- *
- * This function just exists for test thread(s) to bind to. It doesn't 
- *    matter what it does.
- * 
- * - CPH
- *
- **/
-void *test_function_for_thread(void *args)
-{
-	printf("in test function\n");
-	int return_me = 1;
-	for (int i = 1; i < (int)args; i++)
-		return_me *= i;
-	return (void *)return_me;
+   while(1) { }
 }

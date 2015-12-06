@@ -135,7 +135,12 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 	 **/
 
 	case SYSCALL_CREATE:
-		os_printf("Create system call called!\n");
+		os_printf("Create system call called! %x\n", r0);
+		
+		//if (r0 == 0 && r1 == 0)
+		//{
+		//	panic();
+		//}
 
 		return (long) kcreate((char*) r0, r1, 0);
 	case SYSCALL_DELETE:

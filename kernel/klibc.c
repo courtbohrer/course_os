@@ -18,6 +18,7 @@
  ********************************************************************/
 #include <stdint.h>
 #include <stdarg.h>
+#include "interrupt.h"
 
 #include "klibc.h"
 #include "global_defs.h"
@@ -47,6 +48,8 @@ static char upper_case_digits[16] = "0123456789ABCDEF";
 void panic()
 {
 	os_printf("Kernel panic!\n");
+	//disable_interrupt(ALL_INTERRUPT_MASK);
+	//asm volatile("cpsid if");
 	asm("wfi");
 }
 
