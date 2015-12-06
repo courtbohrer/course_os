@@ -19,8 +19,11 @@ int init_all_threads(){
 
 uint32_t kthread_start(kthread_handle * kthread)
 {
-	os_printf("entered kthread_start");
+	os_printf("entered kthread_start \n");
+	//struct vas *curr_vas = vm_get_current_vas();
+	vm_use_kernel_vas();
 	sched_task * task = sched_create_task_from_kthread(kthread, 10);   // using default 10 niceness
+	//vm_enable_vas(curr_vas);
 	sched_add_task(task);
 	return 0;
 }
@@ -36,7 +39,7 @@ uint32_t kthread_start(kthread_handle * kthread)
 int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 {
 	// get into kernel VAS and save state
-	os_printf("in kthread create");
+	os_printf("in kthread create \n");
 	struct vas *curr_vas = vm_get_current_vas();
 
 	vm_use_kernel_vas();
@@ -45,12 +48,13 @@ int kthread_create(kthread_handle *handle, uint32_t (*func)(), void *arg)
 	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
 	kthread->TID = ++GLOBAL_TID;
 
-	kthread->func = func;
+	//kthread->func = func;
 	kthread->arg = arg;
 
 	// save PC and SP
 	//kthread->R13 = STACK_TOP -(kthread->TID * BLOCK_SIZE) - 24 ;  //SP ///check this
 	kthread->R15 = (uint32_t)func;	//PC
+	kthread->R0 = (uint32_t)arg;	//loading arguments into register
 
 
 	// leave kernel vas
@@ -101,7 +105,7 @@ void kthread_save_state( kthread_handle * handle_pointer )
 
 void kthread_load_state(kthread_handle * handle_pointer)
 {
-	os_printf("in save state -- ");
+	os_printf("in load state -- ");
 
 	//vm_enable_vas(handle_pointer->stored_vas);
 
@@ -121,16 +125,19 @@ void kthread_load_state(kthread_handle * handle_pointer)
 	asm("MOV r14, %0"::"r"(handle_pointer->R14):);
 	asm("MOV r15, %0"::"r"(handle_pointer->R15):);
 
-	os_printf("leaving loaded state");
+__builtin_unreachable();
+
+	//os_printf("leaving loaded state");
 }
 
 void execute_kthread(kthread_handle *handle, pcb * pcb_p)
 {
-	os_printf("in kthread execute");
+	os_printf("in kthread execute\n");
 	asm("MOV %0, r15":"=r"(handle->R14)::);
+	os_printf("after mov\n");
 	//hard coding for only one thread -- fix later if there is time
-	vm_enable_vas(pcb_p->stored_vas + BLOCK_SIZE);
 	handle->current_state = THREAD_RUNNING;
+	vm_enable_vas(pcb_p->stored_vas);
 	kthread_load_state(handle);
 }
 
