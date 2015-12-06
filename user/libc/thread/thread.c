@@ -80,6 +80,7 @@ int thread_join(thread_t thread, void **result)
 {
 	long error = 0;
 	error = __syscall2(SYSCALL_THREAD_JOIN, (long)thread, (long)result);
+	error = ERR_INVALID_THREAD;
 	return error;
 }
 

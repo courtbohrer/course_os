@@ -2,25 +2,15 @@
 #include <assert.h>
 #include <stdio.h>
 
-void* f(void* arg)
-{
-   printf("this is the thread\n");
-
-   assert(((int)arg) == 1);
-
-   thread_exit(NULL);
-}
-
 void main(void)
 {
-   thread_t thread;
+   thread_t thread = (thread_t) NULL;
 
-   printf("before thread_create\n");
+   int rc = thread_join(thread, NULL);
 
-   int rc = thread_create(&thread, f, (void*) 1);
-   assert(rc == 0);
+   assert(rc == ERR_INVALID_THREAD);
 
-   printf("after thread_create\n");
+   printf("passed\n");
 
-   while(1) { }
+   while (1) { }
 }

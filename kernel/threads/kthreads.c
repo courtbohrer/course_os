@@ -183,7 +183,6 @@ void execute_kthread(kthread_handle *handle, pcb * pcb_p)
 {
 	os_printf("in kthread execute\n");
 	asm("MOV %0, r15":"=r"(handle->R14)::);
-	os_printf("after mov\n");
 	//hard coding for only one thread -- fix later if there is time
 	handle->current_state = THREAD_RUNNING;
 	vm_enable_vas(pcb_p->stored_vas);
