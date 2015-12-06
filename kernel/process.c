@@ -432,6 +432,7 @@ void setup_process_vas(pcb* pcb_p)
 void init_proc_stack(pcb * pcb_p)
 {
 	int retval = 0;
+
 	for (int i = 0; i < (STACK_SIZE / BLOCK_SIZE); i++)
 	{
 		retval = vm_allocate_page(pcb_p->stored_vas,
@@ -447,10 +448,19 @@ void init_proc_stack(pcb * pcb_p)
 					"A page have been allocated for process stack at vptr: 0x%x\n",
 					(STACK_BASE + (i * BLOCK_SIZE)));
 		}
-		vm_map_shared_memory(KERNEL_VAS,
+
+		// process stack
+		//if(i == 0){
+			vm_map_shared_memory(KERNEL_VAS,
 				(void*) (STACK_BASE + (i * BLOCK_SIZE)), pcb_p->stored_vas,
 				(void*) (STACK_BASE + (i * BLOCK_SIZE)), VM_PERM_USER_RW);
-
+		// } else {
+		// 	//thread stacks
+		// 	vm_map_shared_memory(KERNEL_VAS,
+		// 		(void*) (STACK_BASE + (i * BLOCK_SIZE)), pcb_p->thread_stacks[i-1],
+		// 		(void*) (STACK_BASE + (i * BLOCK_SIZE)), VM_PERM_USER_RW);
+		// }
+		
 	}
 
 	// Stick a NULL at STACK_TOP-sizeof(int*)
@@ -480,3 +490,18 @@ void init_proc_heap(pcb* pcb_p)
 	init_process_heap(pcb_p->stored_vas);
 	os_printf("User Level Heap for Process PID %d initialized\n", pcb_p->PID);
 }
+
+
+/* 
+
+will return the next available stack for kthread to use
+
+ */
+// struct vas *get_next_available_stack(pcb* pcb_p){
+// 	for (int i=0; i < pcb_p->thread_stacks; i++){
+// 		if{
+// 			return 
+// 		}
+
+// 	}
+// }

@@ -49,6 +49,10 @@ void test_thread_lib()
 
 	ret_val = thread_create(thread, &test_function_for_thread, 10);
 
+	if (ret_val == ERR_THREAD_TERMINATED) printf("thread_create returned ERR_THREAD_TERMINATED!\n");
+	if (ret_val == ERR_INVALID_ARGUMENTS) printf("thread_create returned ERR_INVALID_ARGUMENTS!\n");
+	if (ret_val == 0) printf("thread_create returned 0..\n");
+
 	thread_self();
 
 	ret_val = thread_get_id(thread);

@@ -358,7 +358,7 @@ void __sched_dispatch(void) {
             } else if (IS_KTHREAD(active_task)) {
 
                 // ** IMPORTANT COME BACK ** CAB
-
+                //kthread_load_state(AS_KTHREAD(active_task));
                 //AS_KTHREAD(active_task)->cb_handler();
             }
 

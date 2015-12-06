@@ -13,6 +13,8 @@
 #include "process.h"
 #include "kthread.h"
 
+#define RET_FROM_SWI(x) asm volatile("mov r0, %0 \n\t sub     sp, fp, #28 \n\t ldm     sp!, {r4, r1, r2, r3, r7, fp, ip, pc}^":: "r"(x) :)
+
 /* copy vector table from wherever QEMU loads the kernel to 0x00 */
 void init_vector_table(void)
 {
@@ -62,6 +64,8 @@ void __attribute__((interrupt("UNDEF"))) undef_instruction_handler(void)
 
 long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 {
+	long retval = 0;
+
 	int callNumber = 0, r0 = 0, r1 = 0, r2 = 0, r3 = 0;
 
 	asm volatile ("MOV %0, r7":"=r"(callNumber)::);
@@ -99,9 +103,11 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 	case SYSCALL_THREAD_CREATE:
 		os_printf("Thread create system call called!\n");
 
-		kthread_create((kthread_handle *)r0, (uint32_t (*)())r1, (void *)r2);
+		retval = kthread_create((kthread_handle *)r0, (uint32_t (*)())r1, (void *)r2);
 
-		return 0L; 
+		retval = ERR_THREAD_TERMINATED;
+
+		RET_FROM_SWI(retval);
 	case SYSCALL_THREAD_EXIT:
 		os_printf("Thread exit system call called!\n");
 
